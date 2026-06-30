@@ -16,13 +16,17 @@ pipeline {
 
         stage('Build Maven Project') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                dir('demo') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                dir('demo') {
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                }
             }
         }
 
@@ -39,12 +43,6 @@ pipeline {
                     docker logout
                     '''
                 }
-            }
-        }
-
-        stage('Check Kubernetes') {
-            steps {
-                sh 'kubectl get nodes'
             }
         }
 
@@ -69,7 +67,6 @@ pipeline {
         success {
             echo 'Pipeline Executed Successfully!'
         }
-
         failure {
             echo 'Pipeline Failed!'
         }
